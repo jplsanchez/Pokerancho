@@ -1,3 +1,5 @@
+using Controller;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -12,6 +14,7 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] BattleDialogBox dialogBox;
 
     BattleState state;
+    BattleState controllerState;
 
     int currentAction;
     int currentMove;
@@ -19,6 +22,13 @@ public class BattleSystem : MonoBehaviour
     private void Start()
     {
         StartCoroutine(SetupBattle());
+        ControllerManager.ButtonPressed += Test;
+    }
+
+    // TEST
+    private void Test(Key message)
+    {
+        Debug.Log($"Clicou no botão {Enum.GetName(typeof(Key), message)}");
     }
 
     private IEnumerator SetupBattle()
@@ -37,8 +47,17 @@ public class BattleSystem : MonoBehaviour
 
     }
 
+    private void ClearEventsSubscribers()
+    {
+        ControllerManager.ButtonPressed -= HandleMoveSelection;
+        ControllerManager.ButtonPressed -= HandleActionSelection;
+    }
+
     private void PlayerAction()
     {
+        ClearEventsSubscribers();
+        ControllerManager.ButtonPressed += HandleActionSelection;
+
         state = BattleState.PlayerAction;
         StartCoroutine(dialogBox.TypeDialog("Choose an action"));
         dialogBox.EnableActionSelector(true);
@@ -46,87 +65,64 @@ public class BattleSystem : MonoBehaviour
 
     public void PlayerMove()
     {
+        ClearEventsSubscribers();
+        ControllerManager.ButtonPressed += HandleMoveSelection;
+
         state = BattleState.PlayerMove;
         dialogBox.EnableActionSelector(false);
         dialogBox.EnableDialogText(false);
         dialogBox.EnableMoveSelector(true);
     }
 
-    private void Update()
+    private void HandleActionSelection(Key key)
     {
-        if (state == BattleState.PlayerAction)
+        switch (key)
         {
-            HandleActionSelection();
-        }
-        else
-        if (state == BattleState.PlayerMove)
-        {
-            HandleMoveSelection();
-        }
-    }
+            case Key.Down:
+                if (currentAction < 1) ++currentAction;
+                break;
 
+            case Key.Up:
+                if (currentAction > 0) --currentAction;
+                break;
 
-    private void HandleActionSelection()
-    {
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            if (currentAction < 1) ++currentAction;
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            if (currentAction > 0) --currentAction;
+            case Key.A_Button:
+                if (currentAction == 0) PlayerMove();
+                break;
+
+            default:
+                return;
         }
 
         dialogBox.UpdateActionSelection(currentAction);
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            if (currentAction == 0) PlayerMove();
-        }
-
-        //dialogBox.CheckClickOnAction();
-        //if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && dialogBox.)
-        //{
-        //    --score;
-        //}
-
-
-        //if (Input.GetMouseButton(0))
-        //{
-        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        //    RaycastHit hit;
-        //    // Casts the ray and get the first game object hit
-        //    Physics.Raycast(ray, out hit);
-        //    Debug.Log("This hit at " + hit.point);
-        //}
     }
 
-    private void HandleMoveSelection()
+    private void HandleMoveSelection(Key key)
     {
         int numberOfMoves = playerUnit.Pokemon.Moves.Count;
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        switch (key)
         {
-            if (currentMove < numberOfMoves-  1) ++currentMove;
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            if (currentMove > 0) --currentMove;
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            if (currentMove < numberOfMoves - 2) currentMove +=  2;
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            if (currentMove > 1) currentMove -= 2;
+            case Key.Right:
+                if (currentMove < numberOfMoves - 1) ++currentMove;
+                break;
+
+            case Key.Left:
+                if (currentMove > 0) --currentMove;
+                break;
+
+            case Key.Down:
+                if (currentMove < numberOfMoves - 2) currentMove += 2;
+                break;
+
+            case Key.Up:
+                if (currentMove > 1) currentMove -= 2;
+                break;
+
+            default:
+                return;
         }
 
         dialogBox.UpdateMoveSelection(currentMove, playerUnit.Pokemon.Moves[currentMove]);
-
-        //if (Input.GetKeyDown(KeyCode.Z))
-        //{
-        //    if (currentMove == 0) PlayerMove();
-        //}
     }
 }
