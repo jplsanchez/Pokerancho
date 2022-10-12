@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d08621f0d94514498565d0adb467260, type: 3}
+  m_Name: PalmeiTender
+  m_EditorClassIdentifier: 
+  name: PalmeiTender
+  description: 
+  frontSprite: {fileID: 21300000, guid: b48e26ed70b381149be4caeff941f922, type: 3}
+  backSprite: {fileID: 21300000, guid: 6b874f98a2c14aa40b46d3ba6c8abeed, type: 3}
+  type1: 4
+  type2: 6
+  maxHp: 0
+  attack: 0
+  defense: 0
+  spAttack: 0
+  spDefense: 0
+  speed: 0
+  learnableMoves:
+  - moveBase: {fileID: 11400000, guid: 53c8a1f63f4bdf141982b2d3c3a4082a, type: 2}
+    level: 1
+  - moveBase: {fileID: 11400000, guid: 2dfa4e8f950a1b44494cc732ccb80dcd, type: 2}
+    level: 4
+  - moveBase: {fileID: 11400000, guid: e1e027575a61d844d94bcd375d31aa0a, type: 2}
+    level: 7
