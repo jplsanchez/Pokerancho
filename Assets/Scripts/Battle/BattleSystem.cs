@@ -14,7 +14,6 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] BattleDialogBox dialogBox;
 
     BattleState state;
-    BattleState controllerState;
 
     int currentAction;
     int currentMove;
@@ -61,6 +60,8 @@ public class BattleSystem : MonoBehaviour
         state = BattleState.PlayerAction;
         StartCoroutine(dialogBox.TypeDialog("Choose an action"));
         dialogBox.EnableActionSelector(true);
+
+        dialogBox.UpdateActionSelection(currentAction);
     }
 
     public void PlayerMove()
@@ -72,6 +73,61 @@ public class BattleSystem : MonoBehaviour
         dialogBox.EnableActionSelector(false);
         dialogBox.EnableDialogText(false);
         dialogBox.EnableMoveSelector(true);
+
+        dialogBox.UpdateMoveSelection(currentMove, playerUnit.Pokemon.Moves[currentMove]);
+    }
+
+    private void PerformMoveAnimation()
+    {
+        ClearEventsSubscribers();
+
+        state = BattleState.Busy;
+        dialogBox.EnableMoveSelector(false);
+        dialogBox.EnableDialogText(true);
+        StartCoroutine(PerformPlayerMove());
+    }
+
+    private IEnumerator PerformPlayerMove()
+    {
+        var move = playerUnit.Pokemon.Moves[currentMove];
+        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Name} used {move.Name}");
+        
+        yield return new WaitForSeconds(1f);
+
+        bool isFainted = foeUnit.Pokemon.TakeDamage(move, playerUnit.Pokemon);
+        yield return foeHud.UpdateHp();
+
+        if (isFainted)
+        {
+            yield return dialogBox.TypeDialog($"{foeUnit.Pokemon.Name} Fianted");
+        }
+        else
+        {
+            StartCoroutine(FoeMove());
+        }
+    }
+
+    private IEnumerator FoeMove()
+    {
+        state = BattleState.EnemyMove;
+
+        var move = foeUnit.Pokemon.GetRandomMove();
+
+        yield return dialogBox.TypeDialog($"{foeUnit.Pokemon.Name} used {move.Name}");
+
+        yield return new WaitForSeconds(1f);
+
+        bool isFainted = playerUnit.Pokemon.TakeDamage(move, foeUnit.Pokemon);
+        yield return playerHud.UpdateHp();
+
+        if (isFainted)
+        {
+            yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Name} Fianted");
+        }
+        else
+        {
+            PlayerAction();
+        }
     }
 
     private void HandleActionSelection(Key key)
@@ -119,10 +175,15 @@ public class BattleSystem : MonoBehaviour
                 if (currentMove > 1) currentMove -= 2;
                 break;
 
+            case Key.A_Button:
+                PerformMoveAnimation();
+                break;
+
             default:
                 return;
         }
 
         dialogBox.UpdateMoveSelection(currentMove, playerUnit.Pokemon.Moves[currentMove]);
     }
+
 }

@@ -33,6 +33,29 @@ public class Pokemon : PokemonBase
         }
     }
 
+    public bool TakeDamage(Move move, Pokemon attacker)
+    {
+        float modifiers = Random.Range(0.85f, 1f);
+        float a = (2 * attacker.Level + 10) / 250f;
+        float d = a * move.Power * ((float)attacker.Attack / Defense) + 2;
+        int damage = Mathf.FloorToInt(d * modifiers);
+
+        Hp -= damage;
+        if (Hp <= 0)
+        {
+            Hp = 0;
+            return true;
+        }
+
+        return false;
+    }
+
+    public Move GetRandomMove()
+    {
+        var r = Random.Range(0, Moves.Count);
+        return Moves[r];
+    }
+
     private int SetStatByLevel(int stat)
     {
         return Mathf.FloorToInt((stat * Level) / 100f) + 5;

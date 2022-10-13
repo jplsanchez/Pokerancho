@@ -1,4 +1,5 @@
 using Controller;
+using System;
 using UnityEngine;
 
 public class ControllerManager : MonoBehaviour
@@ -19,6 +20,16 @@ public class ControllerManager : MonoBehaviour
         if (Input.GetKeyDown((KeyCode)Key.Down) && ButtonPressed != null) ButtonPressed(Key.Down);
         if (Input.GetKeyDown((KeyCode)Key.Left) && ButtonPressed != null) ButtonPressed(Key.Left);
         if (Input.GetKeyDown((KeyCode)Key.Right) && ButtonPressed != null) ButtonPressed(Key.Right);
+    }
+
+    public void PressButton(Key key)
+    {
+        ButtonPressed?.Invoke(key);
+    }
+
+    public void PressButton(string keyString)
+    {
+        if(Enum.TryParse(keyString, out Key key)) ButtonPressed?.Invoke(key);
     }
 
 

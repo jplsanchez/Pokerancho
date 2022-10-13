@@ -79,24 +79,6 @@ public class BattleDialogBox : MonoBehaviour
         typeText.text = move.Type.ToString();
     }
 
-    //public void CheckClickOnAction()
-    //{
-    //    Collider2D collider = 
-    //    if (Input.GetMouseButtonDown(0) && )
-    //    {
-    //        Debug.Log("Clicou");
-    //    }
-    //    if (Input.GetMouseButtonDown(0))
-    //    {
-    //        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-    //        if (collider.OverLapPoint(mousePosition))
-    //        {
-    //            //do great stuff
-    //        }
-
-    //    }
-
     public void SetMoveNames(List<Move> moves)
     {
         moveTexts.ForEach(m => m.text = "-");
