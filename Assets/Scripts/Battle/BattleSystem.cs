@@ -13,6 +13,10 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] BattleHud _foeHud;
     [SerializeField] BattleDialogBox _dialogBox;
 
+
+    PokemonParty _playerParty;
+    PokemonParty _foePokemons;
+
     // TODO 
     // Adicionar status de quem venceu a esse evento: Action<bool>
     public event Action OnBattleOver;
@@ -21,8 +25,11 @@ public class BattleSystem : MonoBehaviour
     int _currentAction;
     int _currentMove;
 
-    public void StartBattle()
+    public void StartBattle(PokemonParty playerParty, PokemonParty foeParty)
     {
+        _playerParty = playerParty;
+        _foePokemons = foeParty;
+
         StartCoroutine(SetupBattle());
         ControllerManager.ButtonPressed += Test;
     }
@@ -35,8 +42,8 @@ public class BattleSystem : MonoBehaviour
 
     private IEnumerator SetupBattle()
     {
-        _playerUnit.Setup();
-        _foeUnit.Setup();
+        _playerUnit.Setup(_playerParty.GetFirstHealthyPokemon());
+        _foeUnit.Setup(_foePokemons.GetRandomPokemon());
         _playerHud.SetData(_playerUnit.Pokemon);
         _foeHud.SetData(_foeUnit.Pokemon);
 

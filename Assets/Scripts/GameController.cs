@@ -3,21 +3,21 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     [SerializeField] BattleSystem _battleSystem;
-    [SerializeField] Camera _menuCamera;
+    [SerializeField] Menu _menu;
 
     public void StartBattle()
     {
         _battleSystem.gameObject.SetActive(true);
-        _menuCamera.gameObject.SetActive(false);
+        _menu.gameObject.SetActive(false);
 
-        _battleSystem.StartBattle();
+        _battleSystem.StartBattle(_menu.PlayerParty, _menu.FoeParty);
 
         _battleSystem.OnBattleOver += EndBattle;
     }
 
     public void EndBattle()
     {
-        _menuCamera.gameObject.SetActive(true);
+        _menu.gameObject.SetActive(true);
         _battleSystem.gameObject.SetActive(false);
 
         _battleSystem.OnBattleOver -= EndBattle;

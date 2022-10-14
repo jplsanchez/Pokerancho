@@ -610,6 +610,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 162231242}
+  - component: {fileID: 162231243}
   m_Layer: 0
   m_Name: Menu
   m_TagString: Untagged
@@ -631,9 +632,24 @@ Transform:
   m_Children:
   - {fileID: 1793914349}
   - {fileID: 73762059}
+  - {fileID: 1587455603}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &162231243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 162231241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ae2a978266270d4e8869cf27ec03cd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerParty: {fileID: 1727913612}
+  _foeParty: {fileID: 183789614}
 --- !u!1 &164397878
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,6 +806,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 172142081}
   m_CullTransparentMesh: 1
+--- !u!1 &183789612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 183789613}
+  - component: {fileID: 183789614}
+  m_Layer: 0
+  m_Name: Enemy Pokemon Selection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &183789613
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183789612}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.4987403, y: -0.112981245, z: 0.005281467}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1587455603}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &183789614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183789612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454b645c2af372e40b15b8fe970afb0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pokemons:
+  - level: 4
+    basePokemon: {fileID: 11400000, guid: e043a73861ff1f64c9ccdf45a6181844, type: 2}
 --- !u!1 &216734420
 GameObject:
   m_ObjectHideFlags: 0
@@ -1328,8 +1391,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d93a3a507fb262b46a9de88b5e3cab96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _basePokemon: {fileID: 11400000, guid: e043a73861ff1f64c9ccdf45a6181844, type: 2}
-  level: 5
   isPlayerUnit: 0
 --- !u!1 &481535232
 GameObject:
@@ -1793,8 +1854,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d93a3a507fb262b46a9de88b5e3cab96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _basePokemon: {fileID: 11400000, guid: dd7c7b7d4cf3e614aa1bfebd700278b0, type: 2}
-  level: 8
   isPlayerUnit: 1
 --- !u!1 &639345385
 GameObject:
@@ -3038,7 +3097,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _battleSystem: {fileID: 1337576529}
-  _menuCamera: {fileID: 1793914347}
+  _menu: {fileID: 162231243}
 --- !u!4 &1294248036
 Transform:
   m_ObjectHideFlags: 0
@@ -3320,6 +3379,39 @@ RectTransform:
   m_AnchoredPosition: {x: 4.2200554e-10, y: 272.7}
   m_SizeDelta: {x: 800, y: 545.4}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1587455602
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1587455603}
+  m_Layer: 0
+  m_Name: Pokemon Selecition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1587455603
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587455602}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1727913611}
+  - {fileID: 183789613}
+  m_Father: {fileID: 162231242}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1589119216
 GameObject:
   m_ObjectHideFlags: 0
@@ -3685,6 +3777,55 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Lvl
+--- !u!1 &1727913609
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1727913611}
+  - component: {fileID: 1727913612}
+  m_Layer: 0
+  m_Name: Player Pokemon Selection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1727913611
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727913609}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.4987403, y: -0.112981245, z: 0.005281467}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1587455603}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1727913612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727913609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454b645c2af372e40b15b8fe970afb0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pokemons:
+  - level: 7
+    basePokemon: {fileID: 11400000, guid: dd7c7b7d4cf3e614aa1bfebd700278b0, type: 2}
+  - level: 3
+    basePokemon: {fileID: 11400000, guid: e043a73861ff1f64c9ccdf45a6181844, type: 2}
 --- !u!1 &1744460108
 GameObject:
   m_ObjectHideFlags: 0

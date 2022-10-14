@@ -1,31 +1,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pokemon : PokemonBase
+[System.Serializable]
+public class Pokemon
 {
-    public int Level { get; set; }
+    [SerializeField] int level;
+    [SerializeField] PokemonBase basePokemon;
+
+    public int Level => level;
     public int Hp { get; set; }
     public List<Move> Moves { get; set; }
 
-
-    public Pokemon(int level, PokemonBase basePokemon) : base()
+    public void Setup()
     {
-
         foreach (var prop in basePokemon.GetType().GetProperties())
         {
-            this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(basePokemon, null), null);
+            try
+            {
+                this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(basePokemon, null), null);
+            }
+            catch (System.Exception)
+            {
+                Debug.Log($"Error in prop {prop.Name}");
+            }
         }
 
-        PokemonSetup(level);
-
-    }
-    private void PokemonSetup(int level)
-    {
-        Level = level;
         Hp = MaxHp;
 
-        Moves = new();
-        foreach (var move in LearnableMoves)
+        Moves = new List<Move>();
+        foreach (var move in basePokemon.LearnableMoves)
         {
             if (move.Level <= Level) Moves.Add(new(move.MoveBase));
 
@@ -61,7 +64,7 @@ public class Pokemon : PokemonBase
         float a = (2 * attacker.Level + 10) / 250f;
 
         float d;
-        if(move.IsSpecial) d = a * move.Power * ((float)attacker.SpAttack / SpDefense) + 2;
+        if (move.IsSpecial) d = a * move.Power * ((float)attacker.SpAttack / SpDefense) + 2;
         else d = a * move.Power * ((float)attacker.Attack / Defense) + 2;
 
         int damage = Mathf.FloorToInt(d * modifiers);
@@ -86,35 +89,79 @@ public class Pokemon : PokemonBase
         return Mathf.FloorToInt((stat * Level) / 100f) + 5;
     }
 
-    public new int MaxHp
+    // Info
+    protected string name;
+    protected string description;
+
+    // Sprites
+    protected Sprite frontSprite;
+    protected Sprite backSprite;
+
+    // Types
+    protected PokemonType type1;
+    protected PokemonType type2;
+
+    // Properties
+    public string Name
     {
-        get => SetStatByLevel(base.MaxHp);
-        set => base.MaxHp = value;
+        get => name;
+        set => name = value;
     }
-    public new int Attack
+    public string Description
     {
-        get => SetStatByLevel(base.Attack);
-        set => base.Attack = value;
+        get => description;
+        set => description = value;
     }
-    public new int Defense
+    public Sprite FrontSprite
     {
-        get => SetStatByLevel(base.Defense);
-        set => base.Defense = value;
+        get => frontSprite;
+        set => frontSprite = value;
     }
-    public new int SpAttack
+    public Sprite BackSprite
     {
-        get => SetStatByLevel(base.SpAttack);
-        set => base.SpAttack = value;
+        get => backSprite;
+        set => backSprite = value;
     }
-    public new int SpDefense
+    public PokemonType Type1
     {
-        get => SetStatByLevel(base.SpDefense);
-        set => base.SpDefense = value;
+        get => type1;
+        set => type1 = value;
     }
-    public new int Speed
+    public PokemonType Type2
     {
-        get => SetStatByLevel(base.Speed);
-        set => base.Speed = value;
+        get => type2;
+        set => type2 = value;
+    }
+
+    public int MaxHp
+    {
+        get => SetStatByLevel(basePokemon.MaxHp);
+        set => basePokemon.MaxHp = value;
+    }
+    public int Attack
+    {
+        get => SetStatByLevel(basePokemon.Attack);
+        set => basePokemon.Attack = value;
+    }
+    public int Defense
+    {
+        get => SetStatByLevel(basePokemon.Defense);
+        set => basePokemon.Defense = value;
+    }
+    public int SpAttack
+    {
+        get => SetStatByLevel(basePokemon.SpAttack);
+        set => basePokemon.SpAttack = value;
+    }
+    public int SpDefense
+    {
+        get => SetStatByLevel(basePokemon.SpDefense);
+        set => basePokemon.SpDefense = value;
+    }
+    public int Speed
+    {
+        get => SetStatByLevel(basePokemon.Speed);
+        set => basePokemon.Speed = value;
     }
 }
 
