@@ -1,11 +1,14 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PokemonParty : MonoBehaviour
 {
     [SerializeField] List<Pokemon> _pokemons;
+
+    public List<Pokemon> Pokemons => _pokemons;
 
     private void Start()
     {
@@ -20,8 +23,12 @@ public class PokemonParty : MonoBehaviour
         return _pokemons.Where(p => p.Hp > 0).FirstOrDefault();
     }
 
-    public Pokemon GetRandomPokemon()
+    public Pokemon GetAndRestoreRandomPokemon()
     {
-        return _pokemons[Random.Range(0, _pokemons.Count)];
+        return _pokemons[Random.Range(0, _pokemons.Count)].RestoreHp().RestorePp();
+    }
+    public Pokemon GetRandomAlivePokemon()
+    {
+        return _pokemons.Where(p => p.Hp > 0).OrderBy(p => Guid.NewGuid()).FirstOrDefault();
     }
 }

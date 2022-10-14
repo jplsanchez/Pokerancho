@@ -89,6 +89,21 @@ public class Pokemon
         return Mathf.FloorToInt((stat * Level) / 100f) + 5;
     }
 
+    public Pokemon RestoreHp()
+    {
+        Hp = MaxHp;
+        return this;
+    }
+
+    public Pokemon RestorePp()
+    {
+        foreach (var move in Moves)
+        {
+            move.CurrentPP = move.PP;
+        }
+        return this;
+    }
+
     // Info
     protected string name;
     protected string description;

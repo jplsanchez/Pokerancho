@@ -12,6 +12,7 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] BattleHud _playerHud;
     [SerializeField] BattleHud _foeHud;
     [SerializeField] BattleDialogBox _dialogBox;
+    [SerializeField] PartyScreen _partyScreen;
 
 
     PokemonParty _playerParty;
@@ -31,21 +32,16 @@ public class BattleSystem : MonoBehaviour
         _foePokemons = foeParty;
 
         StartCoroutine(SetupBattle());
-        ControllerManager.ButtonPressed += Test;
-    }
-
-    // TEST
-    private void Test(Key message)
-    {
-        Debug.Log($"Clicou no botão {Enum.GetName(typeof(Key), message)}");
     }
 
     private IEnumerator SetupBattle()
     {
         _playerUnit.Setup(_playerParty.GetFirstHealthyPokemon());
-        _foeUnit.Setup(_foePokemons.GetRandomPokemon());
+        _foeUnit.Setup(_foePokemons.GetAndRestoreRandomPokemon());
         _playerHud.SetData(_playerUnit.Pokemon);
         _foeHud.SetData(_foeUnit.Pokemon);
+
+        _partyScreen.Init();
 
         _dialogBox.SetMoveNames(_playerUnit.Pokemon.Moves);
 
@@ -67,10 +63,29 @@ public class BattleSystem : MonoBehaviour
         ControllerManager.ButtonPressed += HandleActionSelection;
 
         _state = BattleState.PlayerAction;
-        StartCoroutine(_dialogBox.TypeDialog("Choose an action"));
+        _dialogBox.SetDialog("Choose an action");
+        _dialogBox.EnableDialogText(true);
         _dialogBox.EnableActionSelector(true);
+        _dialogBox.EnableMoveSelector(false);
 
         _dialogBox.UpdateActionSelection(_currentAction);
+    }
+
+    private void OpenPartyScreen()
+    {
+        _partyScreen.SetPartyData(_playerParty.Pokemons);
+        _partyScreen.gameObject.SetActive(true);
+        Debug.Log("Party Screen");
+    }
+
+    private void OpenBagScreen()
+    {
+        Debug.Log("Bag Screen");
+    }
+
+    private void RunAction()
+    {
+        Debug.Log("Run Action");
     }
 
     public void PlayerMove()
@@ -99,28 +114,28 @@ public class BattleSystem : MonoBehaviour
     private IEnumerator PerformPlayerMove()
     {
         yield return PerformCharacterMove(
-            move: _playerUnit.Pokemon.Moves[_currentMove], 
-            charUnit: _playerUnit, 
-            enemyUnit: _foeUnit, 
+            move: _playerUnit.Pokemon.Moves[_currentMove],
+            charUnit: _playerUnit,
+            enemyUnit: _foeUnit,
             enemyHud: _foeHud);
 
-        if(_foeUnit.Pokemon.Hp > 0)
+        if (_foeUnit.Pokemon.Hp > 0)
         {
             StartCoroutine(PerformFoeMove());
         }
-    }    
+    }
 
     private IEnumerator PerformFoeMove()
     {
         _state = BattleState.EnemyMove;
 
         yield return PerformCharacterMove(
-            move: _foeUnit.Pokemon.GetRandomMove(), 
-            charUnit: _foeUnit, 
-            enemyUnit: _playerUnit, 
+            move: _foeUnit.Pokemon.GetRandomMove(),
+            charUnit: _foeUnit,
+            enemyUnit: _playerUnit,
             enemyHud: _playerHud);
 
-        if(_playerUnit.Pokemon.Hp > 0)
+        if (_playerUnit.Pokemon.Hp > 0)
         {
             PlayerAction();
         }
@@ -163,23 +178,55 @@ public class BattleSystem : MonoBehaviour
     {
         switch (key)
         {
+            case Key.Right:
+                _currentAction++;
+                break;
+
+            case Key.Left:
+                _currentAction--;
+                break;
+
             case Key.Down:
-                if (_currentAction < 1) ++_currentAction;
+                _currentAction += 2;
                 break;
 
             case Key.Up:
-                if (_currentAction > 0) --_currentAction;
+                _currentAction -= 2;
                 break;
 
             case Key.A_Button:
-                if (_currentAction == 0) PlayerMove();
+                DoAction();
                 break;
 
             default:
                 return;
         }
 
+        _currentAction = Mathf.Clamp(_currentAction, 0, 3);
         _dialogBox.UpdateActionSelection(_currentAction);
+    }
+
+    private void DoAction()
+    {
+        switch (_currentAction)
+        {
+            case 0:
+                // Fight
+                PlayerMove();
+                break;
+            case 1:
+                // Bag
+                OpenBagScreen();
+                break;
+            case 2:
+                // Pokemon
+                OpenPartyScreen();
+                break;
+            case 3:
+                // Run
+                RunAction();
+                break;
+        }
     }
 
     private void HandleMoveSelection(Key key)
@@ -206,6 +253,10 @@ public class BattleSystem : MonoBehaviour
 
             case Key.A_Button:
                 PerformMoveAnimation();
+                break;
+            
+            case Key.B_Button:
+                PlayerAction();
                 break;
 
             default:
