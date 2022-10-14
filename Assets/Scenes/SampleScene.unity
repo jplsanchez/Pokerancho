@@ -2839,11 +2839,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd6509123826a9a4fbd1ee8a57075929, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerUnit: {fileID: 616231227}
-  foeUnit: {fileID: 439216986}
-  playerHud: {fileID: 422062450}
-  foeHud: {fileID: 1652050527}
-  dialogBox: {fileID: 707464889}
+  _playerUnit: {fileID: 616231227}
+  _foeUnit: {fileID: 439216986}
+  _playerHud: {fileID: 422062450}
+  _foeHud: {fileID: 1652050527}
+  _dialogBox: {fileID: 707464889}
 --- !u!1 &1392631949
 GameObject:
   m_ObjectHideFlags: 0

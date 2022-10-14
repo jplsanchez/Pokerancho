@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -141,4 +142,38 @@ public enum PokemonType
     Dragon,
     Dark,
     Fairy
+}
+
+public static class TypeEffectivenessChart
+{
+    static float[][] efectivenessChart =
+    {
+        //                  NOR FIR WAT
+        /*NOR*/new float[] {1f, 1f, 1f},
+        /*FIR*/new float[] {1f, 0.5f, 0.5f},
+        /*WAT*/new float[] {1f, 2f, 0.5f}
+    };
+
+    public static float GetEffectiveness(PokemonType attackType, PokemonType defenseType)
+    {
+        try
+        {
+            if (attackType == PokemonType.None || defenseType == PokemonType.None) return 1;
+
+            int row = (int)attackType - 1;
+            int col = (int)defenseType - 1;
+
+            //if (row > efectivenessChart.GetLength(0) || col > efectivenessChart.GetLength(1))
+            //{
+            //    return 1;
+            //}
+
+            return efectivenessChart[row][col];
+        }
+        catch (IndexOutOfRangeException)
+        {
+            return 1;
+        }
+        
+    }
 }

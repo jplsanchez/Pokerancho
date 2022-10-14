@@ -7,16 +7,16 @@ public enum BattleState { Start, PlayerAction, PlayerMove, EnemyMove, Busy }
 
 public class BattleSystem : MonoBehaviour
 {
-    [SerializeField] BattleUnit playerUnit;
-    [SerializeField] BattleUnit foeUnit;
-    [SerializeField] BattleHud playerHud;
-    [SerializeField] BattleHud foeHud;
-    [SerializeField] BattleDialogBox dialogBox;
+    [SerializeField] BattleUnit _playerUnit;
+    [SerializeField] BattleUnit _foeUnit;
+    [SerializeField] BattleHud _playerHud;
+    [SerializeField] BattleHud _foeHud;
+    [SerializeField] BattleDialogBox _dialogBox;
 
-    BattleState state;
+    BattleState _state;
 
-    int currentAction;
-    int currentMove;
+    int _currentAction;
+    int _currentMove;
 
     private void Start()
     {
@@ -32,15 +32,14 @@ public class BattleSystem : MonoBehaviour
 
     private IEnumerator SetupBattle()
     {
-        playerUnit.Setup();
-        foeUnit.Setup();
-        playerHud.SetData(playerUnit.Pokemon);
-        foeHud.SetData(foeUnit.Pokemon);
+        _playerUnit.Setup();
+        _foeUnit.Setup();
+        _playerHud.SetData(_playerUnit.Pokemon);
+        _foeHud.SetData(_foeUnit.Pokemon);
 
-        dialogBox.SetMoveNames(playerUnit.Pokemon.Moves);
+        _dialogBox.SetMoveNames(_playerUnit.Pokemon.Moves);
 
-        yield return dialogBox.TypeDialog($"A wild {foeUnit.Pokemon.Name} appeared");
-        yield return new WaitForSeconds(1f);
+        yield return _dialogBox.TypeDialog($"A wild {_foeUnit.Pokemon.Name} appeared");
 
         PlayerAction();
 
@@ -57,11 +56,11 @@ public class BattleSystem : MonoBehaviour
         ClearEventsSubscribers();
         ControllerManager.ButtonPressed += HandleActionSelection;
 
-        state = BattleState.PlayerAction;
-        StartCoroutine(dialogBox.TypeDialog("Choose an action"));
-        dialogBox.EnableActionSelector(true);
+        _state = BattleState.PlayerAction;
+        StartCoroutine(_dialogBox.TypeDialog("Choose an action"));
+        _dialogBox.EnableActionSelector(true);
 
-        dialogBox.UpdateActionSelection(currentAction);
+        _dialogBox.UpdateActionSelection(_currentAction);
     }
 
     public void PlayerMove()
@@ -69,65 +68,75 @@ public class BattleSystem : MonoBehaviour
         ClearEventsSubscribers();
         ControllerManager.ButtonPressed += HandleMoveSelection;
 
-        state = BattleState.PlayerMove;
-        dialogBox.EnableActionSelector(false);
-        dialogBox.EnableDialogText(false);
-        dialogBox.EnableMoveSelector(true);
+        _state = BattleState.PlayerMove;
+        _dialogBox.EnableActionSelector(false);
+        _dialogBox.EnableDialogText(false);
+        _dialogBox.EnableMoveSelector(true);
 
-        dialogBox.UpdateMoveSelection(currentMove, playerUnit.Pokemon.Moves[currentMove]);
+        _dialogBox.UpdateMoveSelection(_currentMove, _playerUnit.Pokemon.Moves[_currentMove]);
     }
 
     private void PerformMoveAnimation()
     {
         ClearEventsSubscribers();
 
-        state = BattleState.Busy;
-        dialogBox.EnableMoveSelector(false);
-        dialogBox.EnableDialogText(true);
+        _state = BattleState.Busy;
+        _dialogBox.EnableMoveSelector(false);
+        _dialogBox.EnableDialogText(true);
         StartCoroutine(PerformPlayerMove());
     }
 
     private IEnumerator PerformPlayerMove()
     {
-        var move = playerUnit.Pokemon.Moves[currentMove];
-        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Name} used {move.Name}");
-        
-        yield return new WaitForSeconds(1f);
+        yield return PerformCharacterMove(
+            move: _playerUnit.Pokemon.Moves[_currentMove], 
+            charUnit: _playerUnit, 
+            enemyUnit: _foeUnit, 
+            enemyHud: _foeHud);
 
-        bool isFainted = foeUnit.Pokemon.TakeDamage(move, playerUnit.Pokemon);
-        yield return foeHud.UpdateHp();
-
-        if (isFainted)
+        if(_foeUnit.Pokemon.Hp > 0)
         {
-            yield return dialogBox.TypeDialog($"{foeUnit.Pokemon.Name} Fianted");
+            StartCoroutine(PerformFoeMove());
         }
-        else
-        {
-            StartCoroutine(FoeMove());
-        }
-    }
+    }    
 
-    private IEnumerator FoeMove()
+    private IEnumerator PerformFoeMove()
     {
-        state = BattleState.EnemyMove;
+        _state = BattleState.EnemyMove;
 
-        var move = foeUnit.Pokemon.GetRandomMove();
+        yield return PerformCharacterMove(
+            move: _foeUnit.Pokemon.GetRandomMove(), 
+            charUnit: _foeUnit, 
+            enemyUnit: _playerUnit, 
+            enemyHud: _playerHud);
 
-        yield return dialogBox.TypeDialog($"{foeUnit.Pokemon.Name} used {move.Name}");
-
-        yield return new WaitForSeconds(1f);
-
-        bool isFainted = playerUnit.Pokemon.TakeDamage(move, foeUnit.Pokemon);
-        yield return playerHud.UpdateHp();
-
-        if (isFainted)
-        {
-            yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Name} Fianted");
-        }
-        else
+        if(_playerUnit.Pokemon.Hp > 0)
         {
             PlayerAction();
         }
+    }
+
+    private IEnumerator PerformCharacterMove(Move move, BattleUnit charUnit, BattleUnit enemyUnit, BattleHud enemyHud)
+    {
+        yield return _dialogBox.TypeDialog($"{charUnit.Pokemon.Name} used {move.Name}");
+
+        var damageDetails = enemyUnit.Pokemon.TakeDamage(move, charUnit.Pokemon);
+        yield return enemyHud.UpdateHp();
+        yield return ShowDamageDetails(damageDetails);
+
+        if (damageDetails.isFainted)
+        {
+            yield return _dialogBox.TypeDialog($"{enemyUnit.Pokemon.Name} Fanted");
+        }
+    }
+
+    private IEnumerator ShowDamageDetails(DamageDetails damageDetails)
+    {
+        if (damageDetails.Critical > 1f) yield return _dialogBox.TypeDialog("A critical hit!");
+
+        if (damageDetails.TypeEffectiveness > 1f) yield return _dialogBox.TypeDialog("It's super effective!");
+        else if (damageDetails.TypeEffectiveness < 1f) yield return _dialogBox.TypeDialog("It's not very effective!");
+
     }
 
     private void HandleActionSelection(Key key)
@@ -135,44 +144,44 @@ public class BattleSystem : MonoBehaviour
         switch (key)
         {
             case Key.Down:
-                if (currentAction < 1) ++currentAction;
+                if (_currentAction < 1) ++_currentAction;
                 break;
 
             case Key.Up:
-                if (currentAction > 0) --currentAction;
+                if (_currentAction > 0) --_currentAction;
                 break;
 
             case Key.A_Button:
-                if (currentAction == 0) PlayerMove();
+                if (_currentAction == 0) PlayerMove();
                 break;
 
             default:
                 return;
         }
 
-        dialogBox.UpdateActionSelection(currentAction);
+        _dialogBox.UpdateActionSelection(_currentAction);
     }
 
     private void HandleMoveSelection(Key key)
     {
-        int numberOfMoves = playerUnit.Pokemon.Moves.Count;
+        int numberOfMoves = _playerUnit.Pokemon.Moves.Count;
 
         switch (key)
         {
             case Key.Right:
-                if (currentMove < numberOfMoves - 1) ++currentMove;
+                if (_currentMove < numberOfMoves - 1) ++_currentMove;
                 break;
 
             case Key.Left:
-                if (currentMove > 0) --currentMove;
+                if (_currentMove > 0) --_currentMove;
                 break;
 
             case Key.Down:
-                if (currentMove < numberOfMoves - 2) currentMove += 2;
+                if (_currentMove < numberOfMoves - 2) _currentMove += 2;
                 break;
 
             case Key.Up:
-                if (currentMove > 1) currentMove -= 2;
+                if (_currentMove > 1) _currentMove -= 2;
                 break;
 
             case Key.A_Button:
@@ -183,7 +192,7 @@ public class BattleSystem : MonoBehaviour
                 return;
         }
 
-        dialogBox.UpdateMoveSelection(currentMove, playerUnit.Pokemon.Moves[currentMove]);
+        _dialogBox.UpdateMoveSelection(_currentMove, _playerUnit.Pokemon.Moves[_currentMove]);
     }
 
 }
