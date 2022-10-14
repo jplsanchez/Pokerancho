@@ -13,12 +13,15 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] BattleHud _foeHud;
     [SerializeField] BattleDialogBox _dialogBox;
 
-    BattleState _state;
+    // TODO 
+    // Adicionar status de quem venceu a esse evento: Action<bool>
+    public event Action OnBattleOver;
 
+    BattleState _state;
     int _currentAction;
     int _currentMove;
 
-    private void Start()
+    public void StartBattle()
     {
         StartCoroutine(SetupBattle());
         ControllerManager.ButtonPressed += Test;
@@ -130,8 +133,11 @@ public class BattleSystem : MonoBehaviour
 
         if (damageDetails.isFainted)
         {
-            yield return _dialogBox.TypeDialog($"{enemyUnit.Pokemon.Name} Fanted");
+            yield return _dialogBox.TypeDialog($"{enemyUnit.Pokemon.Name} Fainted");
             enemyUnit.PlayFaintAnimation();
+
+            yield return new WaitForSeconds(2f);
+            OnBattleOver();
         }
     }
 
