@@ -119,14 +119,19 @@ public class BattleSystem : MonoBehaviour
     private IEnumerator PerformCharacterMove(Move move, BattleUnit charUnit, BattleUnit enemyUnit, BattleHud enemyHud)
     {
         yield return _dialogBox.TypeDialog($"{charUnit.Pokemon.Name} used {move.Name}");
+        charUnit.PlayAttackAnimation();
+        yield return new WaitForSeconds(1f);
 
+        enemyUnit.PlayHitAnimation();
         var damageDetails = enemyUnit.Pokemon.TakeDamage(move, charUnit.Pokemon);
         yield return enemyHud.UpdateHp();
+
         yield return ShowDamageDetails(damageDetails);
 
         if (damageDetails.isFainted)
         {
             yield return _dialogBox.TypeDialog($"{enemyUnit.Pokemon.Name} Fanted");
+            enemyUnit.PlayFaintAnimation();
         }
     }
 
