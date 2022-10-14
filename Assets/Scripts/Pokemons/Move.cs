@@ -23,6 +23,7 @@ public class Move : MoveBase
         pp = moveBase.PP;
         statType = moveBase.StatType;
         statStage = moveBase.StatStage;
+        isSpecial = moveBase.IsSpecial;
 
         CurrentPP = base.PP;
     }

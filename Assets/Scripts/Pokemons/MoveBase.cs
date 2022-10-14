@@ -17,6 +17,7 @@ public class MoveBase : ScriptableObject
     [SerializeField] protected int pp;
     [SerializeField] protected StatType statType;
     [SerializeField] protected int statStage;
+    [SerializeField] protected bool isSpecial;
 
     // Properties
     public string Name => name;
@@ -28,4 +29,5 @@ public class MoveBase : ScriptableObject
     public int PP => pp;
     public StatType StatType => statType;
     public int StatStage => statStage;
+    public bool IsSpecial => isSpecial;
 }

@@ -165,6 +165,7 @@ Library: lib_burst_generated
 --root-assembly=C:\Users\jpaul\source\Unity\Pokerancho\Temp\StagingArea\Data\Managed\Unity.InternalAPIEngineBridge.001.dll
 --root-assembly=C:\Users\jpaul\source\Unity\Pokerancho\Temp\StagingArea\Data\Managed\Unity.Services.Core.Configuration.dll
 --root-assembly=C:\Users\jpaul\source\Unity\Pokerancho\Temp\StagingArea\Data\Managed\Unity.Subsystem.Registration.dll
+--root-assembly=C:\Users\jpaul\source\Unity\Pokerancho\Temp\StagingArea\Data\Managed\Assembly-CSharp-firstpass.dll
 --assembly-folder=C:\Users\jpaul\source\Unity\Pokerancho\Temp\StagingArea\Data\Managed\
 --pdb-search-paths=Temp/ManagedSymbols/
 --method=Unity.Burst.BurstCompiler+BurstCompilerHelper, Unity.Burst, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::IsBurstEnabled()--8c2be93e18276203cbd918daa2748a10

@@ -59,7 +59,11 @@ public class Pokemon : PokemonBase
 
         float modifiers = random * type1 * type2 * critical;
         float a = (2 * attacker.Level + 10) / 250f;
-        float d = a * move.Power * ((float)attacker.Attack / Defense) + 2;
+
+        float d;
+        if(move.IsSpecial) d = a * move.Power * ((float)attacker.SpAttack / SpDefense) + 2;
+        else d = a * move.Power * ((float)attacker.Attack / Defense) + 2;
+
         int damage = Mathf.FloorToInt(d * modifiers);
 
         return new DamageDetails()

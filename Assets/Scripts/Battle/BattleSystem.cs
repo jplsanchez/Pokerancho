@@ -121,6 +121,8 @@ public class BattleSystem : MonoBehaviour
 
     private IEnumerator PerformCharacterMove(Move move, BattleUnit charUnit, BattleUnit enemyUnit, BattleHud enemyHud)
     {
+        move.CurrentPP--;
+
         yield return _dialogBox.TypeDialog($"{charUnit.Pokemon.Name} used {move.Name}");
         charUnit.PlayAttackAnimation();
         yield return new WaitForSeconds(1f);
