@@ -23,6 +23,12 @@ public class PokemonParty : MonoBehaviour
         return _pokemons.Where(p => p.Hp > 0).FirstOrDefault();
     }
 
+    public bool HasAnyHealthyPokemon()
+    {
+        return _pokemons.Any(p => p.Hp > 0);
+    }
+
+
     public Pokemon GetAndRestoreRandomPokemon()
     {
         return _pokemons[Random.Range(0, _pokemons.Count)].RestoreHp().RestorePp();

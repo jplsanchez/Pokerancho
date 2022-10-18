@@ -7,10 +7,13 @@ using UnityEngine.UI;
 public class BattleUnit : MonoBehaviour
 {
     [SerializeField] bool isPlayerUnit;
+    [SerializeField] BattleHud hud;
 
     Image _image;
     Vector3 _originalPosition;
     Color _originalColor;
+
+    public BattleHud Hud => hud;
 
     private void Awake()
     {
@@ -20,6 +23,7 @@ public class BattleUnit : MonoBehaviour
     }
 
     public Pokemon Pokemon { get; set; }
+    public bool IsPlayerUnit => isPlayerUnit;
 
     public void Setup(Pokemon pokemon)
     {
@@ -28,6 +32,8 @@ public class BattleUnit : MonoBehaviour
         else _image.sprite = Pokemon.FrontSprite;
 
         _image.color = _originalColor;
+
+        hud.SetData(Pokemon);
 
         PlayEnterAnimation();
     }
@@ -39,6 +45,7 @@ public class BattleUnit : MonoBehaviour
 
         _image.transform.DOLocalMoveX(_originalPosition.x, 1f);
     }
+
     public void PlayAttackAnimation()
     {
         var sequence = DOTween.Sequence();

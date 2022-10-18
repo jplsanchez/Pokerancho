@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
         _battleSystem.OnBattleOver += EndBattle;
     }
 
-    public void EndBattle()
+    public void EndBattle(bool won)
     {
         _menu.gameObject.SetActive(true);
         _battleSystem.gameObject.SetActive(false);
