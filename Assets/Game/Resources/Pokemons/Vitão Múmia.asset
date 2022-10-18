@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d08621f0d94514498565d0adb467260, type: 3}
+  m_Name: "Vit\xE3o M\xFAmia"
+  m_EditorClassIdentifier: 
+  name: 
+  description: 
+  frontSprite: {fileID: 21300000, guid: 122285278a499ca40a8794338f3eb335, type: 3}
+  backSprite: {fileID: 21300000, guid: c45df097654008b48bcd4fcbc84d5398, type: 3}
+  type1: 0
+  type2: 0
+  maxHp: 100
+  attack: 100
+  defense: 100
+  spAttack: 100
+  spDefense: 100
+  speed: 100
+  learnableMoves:
+  - moveBase: {fileID: 11400000, guid: 53c8a1f63f4bdf141982b2d3c3a4082a, type: 2}
+    level: 1

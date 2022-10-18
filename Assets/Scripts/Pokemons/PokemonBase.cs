@@ -20,12 +20,12 @@ public class PokemonBase : ScriptableObject
     [SerializeField] protected PokemonType type2;
 
     // Stats
-    [SerializeField] protected int maxHp;
-    [SerializeField] protected int attack;
-    [SerializeField] protected int defense;
-    [SerializeField] protected int spAttack;
-    [SerializeField] protected int spDefense;
-    [SerializeField] protected int speed;
+    [SerializeField] protected int maxHp = 100;
+    [SerializeField] protected int attack = 100;
+    [SerializeField] protected int defense = 100;
+    [SerializeField] protected int spAttack = 100;
+    [SerializeField] protected int spDefense = 100;
+    [SerializeField] protected int speed = 100;
 
     // Moves
     [SerializeField] List<LearnableMove> learnableMoves;
