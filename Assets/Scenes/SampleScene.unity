@@ -4580,6 +4580,12 @@ MonoBehaviour:
     basePokemon: {fileID: 11400000, guid: dd7c7b7d4cf3e614aa1bfebd700278b0, type: 2}
   - level: 3
     basePokemon: {fileID: 11400000, guid: e043a73861ff1f64c9ccdf45a6181844, type: 2}
+  - level: 3
+    basePokemon: {fileID: 11400000, guid: e043a73861ff1f64c9ccdf45a6181844, type: 2}
+  - level: 3
+    basePokemon: {fileID: 11400000, guid: e043a73861ff1f64c9ccdf45a6181844, type: 2}
+  - level: 3
+    basePokemon: {fileID: 11400000, guid: e043a73861ff1f64c9ccdf45a6181844, type: 2}
 --- !u!1 &1744460108
 GameObject:
   m_ObjectHideFlags: 0

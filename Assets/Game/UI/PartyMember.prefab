@@ -504,6 +504,7 @@ MonoBehaviour:
   nameText: {fileID: 1411150416672461967}
   levelText: {fileID: 8258528711295120498}
   hpBar: {fileID: 2232050957646583038}
+  hightlightedColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &9014898215608497761
 GameObject:
   m_ObjectHideFlags: 0

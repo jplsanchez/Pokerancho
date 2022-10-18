@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public enum BattleState { Start, PlayerAction, PlayerMove, EnemyMove, Busy }
+public enum BattleState { Start, PlayerAction, PlayerMove, EnemyMove, Busy, PartyScreen }
 
 public class BattleSystem : MonoBehaviour
 {
@@ -25,6 +25,7 @@ public class BattleSystem : MonoBehaviour
     BattleState _state;
     int _currentAction;
     int _currentMove;
+    int _currentMember;
 
     public void StartBattle(PokemonParty playerParty, PokemonParty foeParty)
     {
@@ -55,6 +56,7 @@ public class BattleSystem : MonoBehaviour
     {
         ControllerManager.ButtonPressed -= HandleMoveSelection;
         ControllerManager.ButtonPressed -= HandleActionSelection;
+        ControllerManager.ButtonPressed -= HandlePartySelection;
     }
 
     private void PlayerAction()
@@ -73,6 +75,10 @@ public class BattleSystem : MonoBehaviour
 
     private void OpenPartyScreen()
     {
+        ClearEventsSubscribers();
+        ControllerManager.ButtonPressed += HandlePartySelection;
+
+        _state = BattleState.PartyScreen;
         _partyScreen.SetPartyData(_playerParty.Pokemons);
         _partyScreen.gameObject.SetActive(true);
         Debug.Log("Party Screen");
@@ -117,7 +123,8 @@ public class BattleSystem : MonoBehaviour
             move: _playerUnit.Pokemon.Moves[_currentMove],
             charUnit: _playerUnit,
             enemyUnit: _foeUnit,
-            enemyHud: _foeHud);
+            enemyHud: _foeHud,
+            party: _playerParty);
 
         if (_foeUnit.Pokemon.Hp > 0)
         {
@@ -133,7 +140,8 @@ public class BattleSystem : MonoBehaviour
             move: _foeUnit.Pokemon.GetRandomMove(),
             charUnit: _foeUnit,
             enemyUnit: _playerUnit,
-            enemyHud: _playerHud);
+            enemyHud: _playerHud,
+            party: _foePokemons);
 
         if (_playerUnit.Pokemon.Hp > 0)
         {
@@ -141,7 +149,7 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
-    private IEnumerator PerformCharacterMove(Move move, BattleUnit charUnit, BattleUnit enemyUnit, BattleHud enemyHud)
+    private IEnumerator PerformCharacterMove(Move move, BattleUnit charUnit, BattleUnit enemyUnit, BattleHud enemyHud, PokemonParty party)
     {
         move.CurrentPP--;
 
@@ -161,6 +169,12 @@ public class BattleSystem : MonoBehaviour
             enemyUnit.PlayFaintAnimation();
 
             yield return new WaitForSeconds(2f);
+
+            var nextPokemon = party.GetFirstHealthyPokemon();
+            if (nextPokemon != null )
+            {
+                // TODO fazer aqui
+            }
             OnBattleOver();
         }
     }
@@ -174,58 +188,64 @@ public class BattleSystem : MonoBehaviour
 
     }
 
-    private void HandleActionSelection(Key key)
+    private static int? MoveInMenu(Key key, int currentPosition, int columns, int rows, int numberOfItems = 0)
     {
+        if (numberOfItems == 0) numberOfItems = columns * rows;
+
         switch (key)
         {
             case Key.Right:
-                _currentAction++;
+                if (currentPosition % rows < columns - 1) currentPosition++;
                 break;
 
             case Key.Left:
-                _currentAction--;
+                if (currentPosition % columns != 0) currentPosition--;
                 break;
 
             case Key.Down:
-                _currentAction += 2;
+                if (currentPosition + columns < numberOfItems) currentPosition += columns;
                 break;
 
             case Key.Up:
-                _currentAction -= 2;
-                break;
-
-            case Key.A_Button:
-                DoAction();
+                if (currentPosition - columns >= 0) currentPosition -= columns;
                 break;
 
             default:
-                return;
+                return null;
         }
 
-        _currentAction = Mathf.Clamp(_currentAction, 0, 3);
-        _dialogBox.UpdateActionSelection(_currentAction);
+        return Mathf.Clamp(currentPosition, 0, numberOfItems - 1);
+
     }
 
-    private void DoAction()
+    private void HandleActionSelection(Key key)
     {
-        switch (_currentAction)
+        if (key == Key.A_Button) DoActionSelected();
+        else _currentAction = MoveInMenu(key, _currentAction, 2, 2) ?? _currentAction;
+
+        _dialogBox.UpdateActionSelection(_currentAction);
+
+        void DoActionSelected()
         {
-            case 0:
-                // Fight
-                PlayerMove();
-                break;
-            case 1:
-                // Bag
-                OpenBagScreen();
-                break;
-            case 2:
-                // Pokemon
-                OpenPartyScreen();
-                break;
-            case 3:
-                // Run
-                RunAction();
-                break;
+            switch (_currentAction)
+            {
+                case 0:
+                    // Fight
+                    PlayerMove();
+                    break;
+                case 1:
+                    // Bag
+                    OpenBagScreen();
+                    break;
+                case 2:
+                    // Pokemon
+                    OpenPartyScreen();
+                    break;
+                case 3:
+                    // Run
+                    RunAction();
+                    break;
+            }
         }
     }
 
@@ -254,7 +274,7 @@ public class BattleSystem : MonoBehaviour
             case Key.A_Button:
                 PerformMoveAnimation();
                 break;
-            
+
             case Key.B_Button:
                 PlayerAction();
                 break;
@@ -266,4 +286,52 @@ public class BattleSystem : MonoBehaviour
         _dialogBox.UpdateMoveSelection(_currentMove, _playerUnit.Pokemon.Moves[_currentMove]);
     }
 
+    private void HandlePartySelection(Key key)
+    {
+        if (key == Key.A_Button)
+        {
+            Pokemon selectedMember = _playerParty.Pokemons[_currentMember];
+
+            if (selectedMember.Hp <= 0)
+            {
+                _partyScreen.SetMessageText("You can't send out a fainted pokemon");
+                return;
+            }
+            if (selectedMember == _playerUnit.Pokemon)
+            {
+                _partyScreen.SetMessageText("You can't switch with the same pokemon");
+                return;
+            }
+
+            ClearEventsSubscribers();
+            _partyScreen.gameObject.SetActive(false);
+            _dialogBox.EnableActionSelector(false);
+            _state = BattleState.Busy;
+            StartCoroutine(SwitchPokemon(selectedMember));
+        }
+        else if (key == Key.B_Button)
+        {
+            _partyScreen.gameObject.SetActive(false);
+            PlayerAction();
+        }
+        else _currentMember = MoveInMenu(key, _currentMember, 2, 2, numberOfItems: _playerParty.Pokemons.Count) ?? _currentMember;
+
+        _partyScreen.UpdateMemberSelection(_currentMember);
+    }
+
+    IEnumerator SwitchPokemon(Pokemon newPokemon)
+    {
+        yield return _dialogBox.TypeDialog($"Come back {_playerUnit.Pokemon.Name}");
+        _playerUnit.PlayFaintAnimation();
+        yield return new WaitForSeconds(2f);
+
+        _playerUnit.Setup(newPokemon);
+        _playerHud.SetData(newPokemon);
+
+        _dialogBox.SetMoveNames(newPokemon.Moves);
+
+        yield return _dialogBox.TypeDialog($"Go {newPokemon.Name}!");
+
+        StartCoroutine(PerformFoeMove());
+    }
 }
