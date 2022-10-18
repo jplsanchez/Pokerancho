@@ -144,6 +144,21 @@ public enum PokemonType
     Fairy
 }
 
+public enum PokeranchoType
+{
+    None,
+    Peão,
+    Tilltado,
+    Pussy,
+    Queijo,
+    Weird, // But Sadness
+    Squisito,
+    Crack,
+    Imenso,
+    Sexual
+}
+
+
 public static class TypeEffectivenessChart
 {
     static float[][] efectivenessChart =
